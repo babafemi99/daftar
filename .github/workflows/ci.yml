@@ -80,9 +80,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: |
-          npm install --ignore-scripts
-          git diff --exit-code -- package-lock.json
+        run: npm ci --ignore-scripts
 
       - name: Lint
         working-directory: frontend
@@ -152,7 +150,7 @@ jobs:
       - name: Install browser-test dependencies
         working-directory: frontend
         run: |
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
           npx playwright install --with-deps chromium
 
       - name: Run authenticated browser acceptance workflow

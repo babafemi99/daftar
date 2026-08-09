@@ -115,7 +115,9 @@ func (r *DocumentRepository) FindByReference(ctx context.Context, ownerID, refer
 
 func (r *DocumentRepository) List(ctx context.Context, ownerID string, filter DocumentListFilter) (DocumentPage, error) {
 	query := bson.D{{Key: "ownerId", Value: ownerID}}
-	if filter.Search != "" { query = append(query, bson.E{Key: "$text", Value: bson.D{{Key: "$search", Value: filter.Search}}}) }
+	if filter.Search != "" {
+		query = append(query, bson.E{Key: "$text", Value: bson.D{{Key: "$search", Value: filter.Search}}})
+	}
 	if filter.Status != nil {
 		query = append(query, bson.E{Key: "status", Value: *filter.Status})
 	}
