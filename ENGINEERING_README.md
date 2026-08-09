@@ -320,12 +320,7 @@ docker compose logs -f
 docker compose down
 ```
 
-MongoDB data is retained in the `mongodb_data` volume. Remove it only when a
-clean local database is wanted:
-
-```sh
-docker compose down --volumes
-```
+MongoDB Atlas owns persistence independently of the Compose lifecycle.
 
 Create the idempotent local reviewer dataset with:
 
@@ -350,11 +345,10 @@ into typed Go structs and validated before any server listener starts.
 Production mode additionally requires secure cookies and rejects wildcard CORS
 origins.
 
-The Makefile uses that same file for native and Docker commands. The only
-topology-specific values are the MongoDB and internal API hostnames: Compose
-uses the container-network values, while `make run` and `make frontend` select
-their corresponding `*_NATIVE` values from the same `.env` file. Override the
-file consistently with `make ENV_FILE=.env.production <target>`.
+The Makefile uses that same file for native and Docker commands. Both execution
+modes connect to the external Atlas URI; only the frontend's internal API
+hostname differs between Compose and native execution. Override the file
+consistently with `make ENV_FILE=.env.production <target>`.
 
 | Variable | Default/example | Purpose |
 | --- | --- | --- |
@@ -366,8 +360,8 @@ file consistently with `make ENV_FILE=.env.production <target>`.
 | `DAFTAR_CORS_ALLOWED_ORIGINS` | `http://localhost:3000` | Exact browser origins allowed to send credentialed requests |
 | `DAFTAR_API_INTERNAL_URL` | `http://api:8080` | Server-side Next.js proxy destination inside Compose |
 | `DAFTAR_API_INTERNAL_URL_NATIVE` | `http://localhost:8080` | Server-side Next.js proxy destination for `make frontend` |
-| `DAFTAR_MONGODB_URI` | `mongodb://mongodb:27017/?replicaSet=rs0` | Container Mongo connection; transactions require replica-set support |
-| `DAFTAR_MONGODB_URI_NATIVE` | `mongodb://localhost:27017/?replicaSet=rs0` | Mongo connection selected by `make run` |
+| `DAFTAR_MONGODB_URI` | Atlas `mongodb+srv://...` URI | External database used by the container runtime |
+| `DAFTAR_MONGODB_URI_NATIVE` | Atlas `mongodb+srv://...` URI | External database selected by `make run` |
 | `DAFTAR_MONGODB_DATABASE` | `daftar` | Application database |
 | `DAFTAR_JWT_SECRET` | no safe production default | HMAC key; must contain at least 32 characters |
 | `DAFTAR_JWT_ISSUER` | `daftar-api` | Required JWT issuer |
@@ -480,10 +474,10 @@ origin.
 
 ## Container and runtime design
 
-The Compose topology contains three services:
+The Compose topology contains two services and connects to Atlas externally:
 
 ```text
-frontend :3000  →  api :8080  →  mongodb :27017 (single-node rs0)
+frontend :3000  →  api :8080  →  MongoDB Atlas
 ```
 
 - The Go build uses cached module/build mounts, disables CGO, strips symbol
@@ -492,10 +486,10 @@ frontend :3000  →  api :8080  →  mongodb :27017 (single-node rs0)
   CA certificate bundle.
 - The Next.js standalone output runs on Alpine as the unprivileged `nextjs`
   user.
-- MongoDB runs as a single-node replica set locally because document/audit and
-  refresh-rotation flows use transactions.
-- Compose waits for MongoDB and API health before starting dependent services.
-- Mongo data persists in the named `mongodb_data` volume.
+- Atlas supplies the replica-set transactions used by document/audit and
+  refresh-rotation flows.
+- Compose waits for API health before starting the frontend.
+- Database availability and persistence are independent of the VPS containers.
 
 ## Two-minute reviewer tour
 
@@ -512,7 +506,7 @@ frontend :3000  →  api :8080  →  mongodb :27017 (single-node rs0)
 
 ## Run without Docker
 
-Start a local MongoDB replica set and copy the example environment file:
+Copy the example environment file and configure its Atlas URI:
 
 ```sh
 cp .env.example .env
@@ -707,22 +701,21 @@ Inspect the stack:
 ```sh
 docker compose ps
 docker compose logs api
-docker compose logs mongodb
 curl --fail http://localhost:8080/api/v1/health/live
 ```
 
 Common local issues:
 
-- **API waits for MongoDB:** allow the healthcheck to initialize the `rs0`
-  replica set before the API starts.
+- **API cannot connect to MongoDB:** verify the Atlas URI, database-user role
+  and Atlas Network Access allowlist for the VPS outbound address.
 - **Old login stops working after auth changes:** sign in once to obtain the
   current access and rotating refresh cookies.
-- **Port collision:** override `DAFTAR_FRONTEND_PORT`, `DAFTAR_API_PORT`, or
-  `DAFTAR_MONGODB_PORT` in `.env`.
+- **Port collision:** override `DAFTAR_FRONTEND_PORT` or `DAFTAR_API_PORT` in
+  `.env`.
 - **Origin rejected:** ensure the browser URL exactly matches an entry in
   `DAFTAR_CORS_ALLOWED_ORIGINS`.
-- **Need a clean database:** `docker compose down --volumes` removes local
-  MongoDB data and cannot be undone.
+- **Need a clean database:** remove the intended records in Atlas explicitly;
+  `docker compose down` never deletes database data.
 
 ### Safe shutdown
 

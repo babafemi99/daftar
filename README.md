@@ -197,7 +197,8 @@ The recommended setup only requires:
 - Git
 
 For development outside Docker, install Go matching `backend/go.mod`, Node.js
-24 or newer, npm and MongoDB 8 with replica-set support.
+24 or newer and npm. Every runtime uses the external MongoDB Atlas database
+configured in `.env`.
 
 ## Step-by-step setup
 
@@ -250,7 +251,7 @@ For development outside Docker, install Go matching `backend/go.mod`, Node.js
 | Next.js application | <http://localhost:3000> |
 | Go REST API | <http://localhost:8080> |
 | Liveness endpoint | <http://localhost:8080/api/v1/health/live> |
-| MongoDB | `mongodb://localhost:27017` |
+| Database | External MongoDB Atlas cluster configured in `.env` |
 
 ### Optional reviewer account
 
@@ -264,9 +265,8 @@ before seeding any public environment.
 
 ### Run without Docker
 
-Copy `.env.example`, start a MongoDB 8 replica set, then run the backend from
-the repository root. The Makefile loads the same root `.env` used by Compose
-and selects the native MongoDB endpoint automatically:
+Copy `.env.example`, configure the Atlas URI, then run the backend from the
+repository root. The Makefile loads the same root `.env` used by Compose:
 
 ```sh
 make run
@@ -336,9 +336,8 @@ docker compose logs -f
 docker compose down
 ```
 
-MongoDB data is retained in the named `mongodb_data` volume. Use
-`docker compose down --volumes` only when a completely clean local database is
-intended.
+MongoDB Atlas owns database persistence independently of the Compose lifecycle;
+stopping or rebuilding the containers does not remove application data.
 
 ### Run the verification suites
 

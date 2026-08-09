@@ -23,7 +23,7 @@ help:
 	@echo "  make tidy       Tidy module dependencies"
 	@echo "  make check      Format, vet, and test"
 	@echo "  make docker-build  Build the API container image"
-	@echo "  make docker-up     Start the API and MongoDB"
+	@echo "  make docker-up     Start the API and frontend"
 	@echo "  make docker-down   Stop the Docker stack"
 	@echo "  make docker-logs   Follow Docker stack logs"
 	@echo "  make up/down/logs  Short aliases for the Docker commands"
