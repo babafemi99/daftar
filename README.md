@@ -269,10 +269,13 @@ Copy `.env.example`, configure the Atlas URI, then run the backend from the
 repository root. The Makefile loads the same root `.env` used by Compose:
 
 ```sh
-make run
+make dev
 ```
 
-In another terminal:
+This starts the Go API and Next.js frontend together. Use `make run` or
+`make frontend` when only one process is needed.
+
+For separate terminals:
 
 ```sh
 cd frontend

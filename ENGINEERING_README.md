@@ -516,10 +516,11 @@ Run both processes from the repository root. The Makefile loads `.env` and
 selects its native MongoDB and API endpoints automatically:
 
 ```sh
-make run
+make dev
 ```
 
-In another terminal, install and run the frontend:
+Use `make run` and `make frontend` in separate terminals when independent
+process control is preferred.
 
 ```sh
 cd frontend

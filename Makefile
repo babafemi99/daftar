@@ -6,10 +6,11 @@ API_BINARY := bin/daftar-api
 LOAD_ENV = set -a; . ./$(ENV_FILE); set +a;
 COMPOSE = DAFTAR_ENV_FILE=$(ENV_FILE) docker compose --env-file $(ENV_FILE)
 
-.PHONY: help check-env run seed seed-native frontend build frontend-build test test-integration test-race fmt vet tidy check clean docker-build docker-up docker-down docker-logs up down logs
+.PHONY: help check-env dev run seed seed-native frontend build frontend-build test test-integration test-race fmt vet tidy check clean docker-build docker-up docker-down docker-logs up down logs
 
 help:
 	@echo "Daftar development commands"
+	@echo "  make dev        Run the API and frontend together"
 	@echo "  make run        Run the API"
 	@echo "  make seed       Seed reviewer data through Docker and exit"
 	@echo "  make seed-native  Seed reviewer data using native dependencies"
@@ -32,6 +33,9 @@ help:
 
 check-env:
 	@test -f "$(ENV_FILE)" || { echo "missing $(ENV_FILE); copy .env.example to $(ENV_FILE)"; exit 1; }
+
+dev: check-env
+	$(MAKE) --no-print-directory -j2 run frontend
 
 run: check-env
 	$(LOAD_ENV) \
