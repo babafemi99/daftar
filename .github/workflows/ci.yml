@@ -1,0 +1,182 @@
+name: Daftar CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daftar-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  backend:
+    name: Backend quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Verify modules
+        working-directory: backend
+        run: go mod verify
+
+      - name: Check formatting
+        working-directory: backend
+        run: |
+          unformatted="$(gofmt -l .)"
+          test -z "$unformatted" || {
+            echo "The following Go files require gofmt:"
+            echo "$unformatted"
+            exit 1
+          }
+
+      - name: Vet
+        working-directory: backend
+        run: go vet ./...
+
+      - name: Unit tests
+        working-directory: backend
+        run: go test ./...
+
+      - name: Race detector
+        working-directory: backend
+        run: go test -race ./...
+
+  frontend:
+    name: Frontend quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: |
+          npm install --ignore-scripts
+          git diff --exit-code -- package-lock.json
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Type check
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: Production build
+        working-directory: frontend
+        env:
+          DAFTAR_API_INTERNAL_URL: http://api:8080
+        run: npm run build
+
+  integration:
+    name: MongoDB integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Run repository and production-router integration suites
+        working-directory: backend
+        run: go test -count=1 -tags=integration ./internal/mercury ./internal/transport/web
+
+  acceptance:
+    name: Docker acceptance
+    needs: [backend, frontend, integration]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Prepare CI environment
+        run: |
+          cp .env.example .env
+          sed -i 's/^DAFTAR_RATE_LIMIT_PER_MINUTE=.*/DAFTAR_RATE_LIMIT_PER_MINUTE=1000/' .env
+
+      - name: Build and start production stack
+        run: docker compose --env-file .env up --build --wait --wait-timeout 180
+
+      - name: Verify service health
+        run: |
+          curl --fail --silent --show-error http://localhost:8080/api/v1/health/live
+          curl --fail --silent --show-error http://localhost:3000 >/dev/null
+
+      - name: Install browser-test dependencies
+        working-directory: frontend
+        run: |
+          npm install --ignore-scripts
+          npx playwright install --with-deps chromium
+
+      - name: Run authenticated browser acceptance workflow
+        working-directory: frontend
+        env:
+          DAFTAR_E2E_BASE_URL: http://localhost:3000
+        run: npm run test:e2e
+
+      - name: Capture Docker logs on failure
+        if: failure()
+        run: docker compose --env-file .env logs --no-color > daftar-compose.log
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: daftar-acceptance-diagnostics-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            daftar-compose.log
+            frontend/test-results/
+            frontend/playwright-report/
+
+      - name: Stop production stack
+        if: always()
+        run: docker compose --env-file .env down --volumes --remove-orphans

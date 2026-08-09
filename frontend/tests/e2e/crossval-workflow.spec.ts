@@ -29,10 +29,11 @@ test("authenticated CrossVal workflow remains owner-scoped", async ({ browser, p
   await expect(page.getByRole("button", { name: "Print / Save PDF" })).toBeVisible();
   await expect(page.getByLabel("Title")).toHaveCount(0);
 
-  await expect(page.getByRole("heading", { name: "Document activity" })).toBeVisible();
-  await expect(page.getByText("Document finalized", { exact: true })).toBeVisible();
-  await expect(page.getByText("Draft created", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Version 3/)).toBeVisible();
+  const activity = page.getByLabel("Document activity");
+  await expect(activity.getByRole("heading", { name: "Document activity" })).toBeVisible();
+  await expect(activity.getByText("Document finalized", { exact: true })).toBeVisible();
+  await expect(activity.getByText("Draft created", { exact: true })).toBeVisible();
+  await expect(activity.getByText(/Version 3/)).toBeVisible();
 
   await page.emulateMedia({ media: "print" });
   await expect(page.locator(".print-document-header")).toBeVisible();
@@ -53,7 +54,7 @@ test("authenticated CrossVal workflow remains owner-scoped", async ({ browser, p
     expect(created.status()).toBe(201);
   }
 
-  await page.getByRole("link", { name: "Documents" }).click();
+  await page.getByLabel("Main navigation").getByRole("link", { name: "Documents" }).click();
   await expect(page).toHaveURL(/\/documents$/);
   await expect(page.getByText("Page 1 of 2")).toBeVisible();
   await page.getByRole("button", { name: "Next" }).click();
@@ -61,7 +62,7 @@ test("authenticated CrossVal workflow remains owner-scoped", async ({ browser, p
 
   await page.getByLabel("Search documents").fill("CrossVal autosaved");
   await page.getByRole("button", { name: "Search", exact: true }).click();
-  await expect(page.getByRole("link", { name: "CrossVal autosaved sample" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "CrossVal autosaved sample", exact: true })).toBeVisible();
   await expect(page.getByText("Page 2 of 2")).toHaveCount(0);
 
   const refreshed = await page.request.post("/api/v1/auth/refresh", { headers: { Origin: "http://localhost:3000" } });
@@ -69,7 +70,7 @@ test("authenticated CrossVal workflow remains owner-scoped", async ({ browser, p
   const currentUser = await page.request.get("/api/v1/me");
   expect(currentUser.status()).toBe(200);
 
-  await page.getByRole("link", { name: "Reports" }).click();
+  await page.getByLabel("Main navigation").getByRole("link", { name: "Reports" }).click();
   await expect(page).toHaveURL(/\/reports$/);
   await expect(page.locator(".currency-report-card .money-amount").filter({ hasText: "USD 421.50" })).toBeVisible();
   await expect(page.locator(".currency-report-card .document-count")).toContainText("1 document");

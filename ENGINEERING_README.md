@@ -4,6 +4,10 @@
 > [Daftar Submission Guide](README.md). This file remains the concise
 > repository and operational reference.
 
+**Canonical repository:** <https://github.com/babafemi99/daftar>
+
+[![Daftar CI](https://github.com/babafemi99/daftar/actions/workflows/ci.yml/badge.svg)](https://github.com/babafemi99/daftar/actions/workflows/ci.yml)
+
 Daftar is a full-stack multi-rate pricing calculator for creating financial
 documents with per-line discounts and taxes. It provides authenticated,
 owner-scoped document management, deterministic server-side calculations, an
@@ -624,6 +628,14 @@ owner's timeline newest first. Cross-owner requests preserve the API's
 as a responsive activity timeline with distinct lifecycle states.
 
 ## Tests and quality checks
+
+The [Daftar CI workflow](.github/workflows/ci.yml) runs automatically for
+pushes and pull requests targeting `main`, and can also be dispatched manually.
+Independent backend, frontend and Testcontainers jobs run first; only after all
+three pass does CI build the production Compose stack and execute the complete
+authenticated Playwright workflow. Failed browser runs retain screenshots,
+traces and Docker logs for seven days, while concurrency control cancels stale
+runs from the same branch.
 
 ### Test matrix
 

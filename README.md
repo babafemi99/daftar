@@ -9,7 +9,13 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/babafemi99/daftar/actions/workflows/ci.yml"><img src="https://github.com/babafemi99/daftar/actions/workflows/ci.yml/badge.svg" alt="Daftar CI status" /></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/babafemi99/daftar">Source</a> ·
   <a href="#deployed-url">Live application</a> ·
+  <a href="ENGINEERING_README.md">Engineering guide</a> ·
   <a href="#step-by-step-setup">Setup</a> ·
   <a href="#five-minute-reviewer-tour">Reviewer tour</a> ·
   <a href="#complete-implemented-feature-inventory">Features</a> ·
@@ -175,6 +181,7 @@ it is not a missing pagination feature.
 - [x] Startup-managed strict MongoDB schema validators for every persisted collection
 - [x] Multi-stage, non-root frontend and API images
 - [x] Correlated structured operational logs with request, user and error-code context
+- [x] GitHub Actions quality, integration and production-stack acceptance pipeline
 - [x] Unit, race, HTTP, repository and Testcontainers integration coverage
 - [x] Real authenticated Playwright browser workflow
 - [x] API, calculation, data-model, architecture and brand documentation
@@ -201,7 +208,7 @@ For development outside Docker, install Go matching `backend/go.mod`, Node.js
 1. Clone the repository and enter it:
 
    ```sh
-   git clone <repository-url>
+   git clone https://github.com/babafemi99/daftar.git
    cd daftar
    ```
 
