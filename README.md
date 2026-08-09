@@ -231,7 +231,14 @@ For development outside Docker, install Go matching `backend/go.mod`, Node.js
    curl http://localhost:8080/api/v1/health/live
    ```
 
-5. Open <http://localhost:3000>, register an account and sign in.
+5. Optionally create the idempotent reviewer account and demonstration ledger:
+
+   ```sh
+   make seed
+   ```
+
+   Then sign in at <http://localhost:3000> with
+   `reviewer@daftar.local` / `DaftarDemo2026!`, or register your own account.
 
 6. From the dashboard, choose **Create the 421.50 sample** for a quick
    verification of mixed discounts and tax rates.
@@ -247,10 +254,13 @@ For development outside Docker, install Go matching `backend/go.mod`, Node.js
 
 ### Optional reviewer account
 
-The `.env.example` bootstrap-user settings can create a predictable local
-review account when the API starts. Bootstrap creation is idempotent and should
-remain disabled outside controlled review environments. Never commit real
-credentials.
+`make seed` runs the API image as a one-shot command, creates the reviewer from
+the root `.env`, and exits without starting another server. It also creates an
+empty draft, a mixed-tax/discount draft, a finalized invoice and an archived
+draft through the real application services. Re-running it creates no duplicate
+users or documents and repairs a partially completed finalize/archive step.
+The published credentials are local demonstration values only; replace them
+before seeding any public environment.
 
 ### Run without Docker
 

@@ -327,9 +327,18 @@ clean local database is wanted:
 docker compose down --volumes
 ```
 
-The optional bootstrap-user variables in `.env.example` may create a local
-review account. Keep bootstrap creation disabled when it is not needed, and
-never commit real credentials.
+Create the idempotent local reviewer dataset with:
+
+```sh
+make seed
+```
+
+This executes `/daftar-api -seed` as a one-shot Compose command. It obtains the
+reviewer identity from the root `.env`, uses the normal user and audited
+document services, creates active/finalized/archived examples, and exits. Use
+`make seed-native` when the API and MongoDB dependencies run outside Docker.
+The example credentials are intentionally local; override them before seeding
+a public environment.
 
 ## Configuration reference
 

@@ -6,11 +6,13 @@ API_BINARY := bin/daftar-api
 LOAD_ENV = set -a; . ./$(ENV_FILE); set +a;
 COMPOSE = DAFTAR_ENV_FILE=$(ENV_FILE) docker compose --env-file $(ENV_FILE)
 
-.PHONY: help check-env run frontend build frontend-build test test-integration test-race fmt vet tidy check clean docker-build docker-up docker-down docker-logs up down logs
+.PHONY: help check-env run seed seed-native frontend build frontend-build test test-integration test-race fmt vet tidy check clean docker-build docker-up docker-down docker-logs up down logs
 
 help:
 	@echo "Daftar development commands"
 	@echo "  make run        Run the API"
+	@echo "  make seed       Seed reviewer data through Docker and exit"
+	@echo "  make seed-native  Seed reviewer data using native dependencies"
 	@echo "  make frontend   Run the Next.js frontend"
 	@echo "  make build      Build bin/daftar-api"
 	@echo "  make test       Run all tests"
@@ -35,6 +37,14 @@ run: check-env
 	$(LOAD_ENV) \
 	export DAFTAR_MONGODB_URI="$${DAFTAR_MONGODB_URI_NATIVE:-$${DAFTAR_MONGODB_URI}}"; \
 	cd $(BACKEND_DIR) && $(GO) run $(API_PACKAGE)
+
+seed: check-env
+	$(COMPOSE) run --build --rm api -seed
+
+seed-native: check-env
+	$(LOAD_ENV) \
+	export DAFTAR_MONGODB_URI="$${DAFTAR_MONGODB_URI_NATIVE:-$${DAFTAR_MONGODB_URI}}"; \
+	cd $(BACKEND_DIR) && $(GO) run $(API_PACKAGE) -seed
 
 frontend: check-env
 	$(LOAD_ENV) \
