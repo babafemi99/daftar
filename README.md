@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/brand-daftar/daftar-wordmark.svg" width="560" alt="Daftar bilingual English and Arabic wordmark on a warm ivory panel" />
+  <img src="docs/brand-daftar/daftar-compact.svg" width="560" alt="Daftar compact ledger symbol and wordmark" />
 </p>
 
 <h1 align="center">Daftar — The modern financial register</h1>

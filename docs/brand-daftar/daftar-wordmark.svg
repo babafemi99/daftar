@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="380 55 565 330" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="395 70 535 300" role="img" aria-labelledby="title desc">
   <title id="title">Daftar bilingual wordmark</title>
-  <desc id="desc">Daftar English and Arabic outlined wordmark on a warm ivory panel.</desc>
-  <rect x="381" y="56" width="563" height="328" rx="24" fill="#F7F1E7" stroke="#E2D6C7" stroke-width="2"/>
+  <desc id="desc">Daftar English and Arabic outlined wordmark.</desc>
   <g fill="#17231F">
     <path d="M138 0L138 88L327 88Q413 88 474.5 123Q536 158 569 220Q602 282 602 364Q602 445 569.5 505Q537 565 475.5 598.5Q414 632 327 632L139 632L139 720L327 720Q443 720 529 676Q615 632 662.5 551.5Q710 471 710 362Q710 253 662 171.5Q614 90 528.5 45Q443 0 328 0ZM74 0L74 720L180 720L180 0Z" transform="translate(420.000 210.000) scale(0.154000 -0.154000)"/>
     <path d="M389 0Q384 19 382.5 42Q381 65 381 98L376 98L376 341Q376 390 351.5 414.5Q327 439 274 439Q223 439 192.5 419Q162 399 157 362L58 362Q65 434 123 477Q181 520 278 520Q378 520 428 473.5Q478 427 478 337L478 98Q478 75 481 51Q484 27 490 0ZM213 -10Q135 -10 89 28.5Q43 67 43 133Q43 201 91.5 240.5Q140 280 231 294L399 321L399 248L247 224Q196 216 170.5 197Q145 178 145 142Q145 107 168.5 89.5Q192 72 237 72Q297 72 336.5 101Q376 130 376 174L389 100Q371 47 325 18.5Q279 -10 213 -10Z" transform="translate(534.730 210.000) scale(0.154000 -0.154000)"/>
