@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Daftar favicon</title>
+  <desc id="desc">A simplified open-ledger D mark on a dark rounded square.</desc>
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#17231F"/>
+  <g fill="none" stroke="#F7F5EF" stroke-linejoin="miter" stroke-linecap="square">
+    <path d="M58 48H119C174 48 210 81 210 128C210 165 190 188 157 202V218"
+          stroke-width="14"/>
+    <path d="M58 48V202C96 198 128 200 157 218"
+          stroke-width="14"/>
+    <path d="M84 108H137M84 148H137"
+          stroke-width="9"/>
+  </g>
+</svg>

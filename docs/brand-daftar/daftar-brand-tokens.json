@@ -1,0 +1,39 @@
+{
+  "$schema": "https://design-tokens.org/schema.json",
+  "brand": {
+    "ink": "#17231F",
+    "palm": "#176B55",
+    "palmHover": "#105441",
+    "copper": "#C46F45",
+    "paper": "#F7F5EF",
+    "ivory": "#FFFEFA",
+    "sand": "#EEEAE0"
+  },
+  "semantic": {
+    "text": "#202723",
+    "textMuted": "#667069",
+    "textSubtle": "#858D88",
+    "border": "#DDD9CF",
+    "borderStrong": "#C8C3B8",
+    "focus": "#268C70",
+    "success": { "foreground": "#176B55", "background": "#DCEFE8" },
+    "warning": { "foreground": "#8A5A00", "background": "#FFF4D6" },
+    "danger": { "foreground": "#9A342C", "background": "#FCE8E5" },
+    "info": { "foreground": "#305A6A", "background": "#E8F0F3" }
+  },
+  "documentStatus": {
+    "draft": { "foreground": "#5C564B", "background": "#EDE8DC" },
+    "finalized": { "foreground": "#155E4B", "background": "#DCEFE8" },
+    "archived": { "foreground": "#59615D", "background": "#E6E8E6" }
+  },
+  "typography": {
+    "sans": "Instrument Sans",
+    "arabic": "IBM Plex Sans Arabic",
+    "mono": "IBM Plex Mono",
+    "weights": { "regular": 400, "medium": 500, "semibold": 600 },
+    "sizesRem": { "xs": 0.75, "sm": 0.875, "md": 1, "lg": 1.25, "xl": 1.75, "2xl": 2.25 }
+  },
+  "spacingRem": { "1": 0.25, "2": 0.5, "3": 0.75, "4": 1, "5": 1.25, "6": 1.5, "8": 2, "10": 2.5, "12": 3, "16": 4 },
+  "radiusRem": { "sm": 0.375, "md": 0.625, "lg": 0.875 },
+  "layoutRem": { "controlHeight": 2.75, "sidebarWidth": 16, "contentWidth": 90 }
+}
