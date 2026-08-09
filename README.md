@@ -13,15 +13,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/babafemi99/daftar">Source</a> ·
-  <a href="#deployed-url">Live application</a> ·
-  <a href="ENGINEERING_README.md">Engineering guide</a> ·
-  <a href="#step-by-step-setup">Setup</a> ·
+  <a href="#deployed-url">Live demo</a> ·
   <a href="#five-minute-reviewer-tour">Reviewer tour</a> ·
   <a href="#complete-implemented-feature-inventory">Features</a> ·
-  <a href="#calculation-and-rounding-policy">Calculations</a> ·
-  <a href="#transactional-audit-trail">Audit trail</a> ·
-  <a href="#product-direction-boqs-for-the-people-who-do-the-work">Product direction</a>
+  <a href="#step-by-step-setup">Setup</a> ·
+  <a href="ENGINEERING_README.md">Engineering</a>
 </p>
 
 Daftar is a production-minded, full-stack multi-rate pricing calculator for
