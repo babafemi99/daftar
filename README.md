@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/brand-daftar/ChatGPT%20Image%20Aug%208%2C%202026%2C%2007_30_14%20PM.png" width="1100" alt="Daftar bilingual brand board showing the open-ledger symbol, Daftar and دَفْتَر wordmarks, app icon and brand colours" />
+  <img src="docs/brand-daftar/daftar-wordmark.svg" width="560" alt="Daftar bilingual English and Arabic wordmark on a warm ivory panel" />
 </p>
 
 <h1 align="center">Daftar — The modern financial register</h1>
