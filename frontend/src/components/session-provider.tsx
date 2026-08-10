@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ApiClientError, authApi, User } from "@/lib/api";
 import { useToast } from "@/components/toast-provider";
@@ -22,8 +22,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const { showToast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<SessionStatus>("loading");
+  const statusRef = useRef<SessionStatus>("loading");
+  const deliberateLogout = useRef(false);
 
   const clearSession = useCallback((notify: boolean) => {
+    statusRef.current = "unauthenticated";
     setUser(null);
     setStatus("unauthenticated");
     if (notify) showToast({ tone: "info", title: "Session expired", message: "Sign in again to continue." });
@@ -33,33 +36,40 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
     authApi.me()
-      .then((currentUser) => { if (active) { setUser(currentUser); setStatus("authenticated"); } })
+      .then((currentUser) => { if (active) { statusRef.current = "authenticated"; setUser(currentUser); setStatus("authenticated"); } })
       .catch((cause) => {
         if (!active) return;
         if (cause instanceof ApiClientError && cause.status === 401) clearSession(false);
-        else { setStatus("unauthenticated"); showToast({ tone: "error", title: "Session check failed", message: "We could not verify your session." }); }
+        else { statusRef.current = "unauthenticated"; setStatus("unauthenticated"); showToast({ tone: "error", title: "Session check failed", message: "We could not verify your session." }); }
       });
     return () => { active = false; };
   }, [clearSession, showToast]);
 
   useEffect(() => {
-    const expired = () => clearSession(true);
+    const expired = () => {
+      if (deliberateLogout.current || statusRef.current !== "authenticated") return;
+      clearSession(true);
+    };
     window.addEventListener("daftar:session-expired", expired);
     return () => window.removeEventListener("daftar:session-expired", expired);
   }, [clearSession]);
 
   const establishSession = useCallback((currentUser: User) => {
+    statusRef.current = "authenticated";
     setUser(currentUser);
     setStatus("authenticated");
   }, []);
 
   const logout = useCallback(async () => {
+    deliberateLogout.current = true;
+    statusRef.current = "unauthenticated";
+    setUser(null);
+    setStatus("unauthenticated");
     try { await authApi.logout(); }
     finally {
-      setUser(null);
-      setStatus("unauthenticated");
       router.replace("/");
       showToast({ tone: "success", title: "Signed out", message: "Your session has ended safely." });
+      deliberateLogout.current = false;
     }
   }, [router, showToast]);
 

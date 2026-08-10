@@ -3,6 +3,7 @@ ENV_FILE ?= .env
 BACKEND_DIR := backend
 API_PACKAGE := ./cmd/api
 API_BINARY := bin/daftar-api
+DEV_API_HEALTH_URL ?= http://localhost:8080/api/v1/health/live
 LOAD_ENV = set -a; . ./$(ENV_FILE); set +a;
 COMPOSE = DAFTAR_ENV_FILE=$(ENV_FILE) docker compose --env-file $(ENV_FILE)
 
@@ -35,7 +36,17 @@ check-env:
 	@test -f "$(ENV_FILE)" || { echo "missing $(ENV_FILE); copy .env.example to $(ENV_FILE)"; exit 1; }
 
 dev: check-env
-	$(MAKE) --no-print-directory -j2 run frontend
+	@$(MAKE) --no-print-directory run & api_pid=$$!; \
+	trap 'kill $$api_pid 2>/dev/null || true; wait $$api_pid 2>/dev/null || true' EXIT INT TERM; \
+	ready=0; \
+	for attempt in $$(seq 1 60); do \
+		if curl --fail --silent --show-error "$(DEV_API_HEALTH_URL)" >/dev/null 2>&1; then ready=1; break; fi; \
+		if ! kill -0 $$api_pid 2>/dev/null; then wait $$api_pid; exit $$?; fi; \
+		sleep 1; \
+	done; \
+	if [ $$ready -ne 1 ]; then echo "API did not become healthy at $(DEV_API_HEALTH_URL) within 60 seconds"; exit 1; fi; \
+	echo "API is healthy; starting the frontend"; \
+	$(MAKE) --no-print-directory frontend
 
 run: check-env
 	$(LOAD_ENV) \

@@ -519,6 +519,9 @@ selects its native MongoDB and API endpoints automatically:
 make dev
 ```
 
+The combined target starts the API first and launches Next.js only after the
+API health endpoint succeeds. It stops immediately if backend startup fails.
+
 Use `make run` and `make frontend` in separate terminals when independent
 process control is preferred.
 

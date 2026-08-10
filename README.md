@@ -20,6 +20,10 @@
   <a href="ENGINEERING_README.md">Engineering</a>
 </p>
 
+<p align="center">
+  <a href="https://daftar.benjys.me/"><strong>Open the live Daftar demo →</strong></a>
+</p>
+
 Daftar is a production-minded, full-stack multi-rate pricing calculator for
 authenticated financial documents. It does more than produce the right total:
 it protects ownership, preserves calculation integrity, prevents lost updates,
@@ -31,6 +35,10 @@ responsive Next.js interface. The application containers share one Docker
 Compose stack while Atlas remains independent of the deployment host.
 Financial arithmetic is deterministic and server-owned; the browser never
 supplies calculated totals.
+
+![Daftar dashboard showing finalized-document metrics and currency-separated totals](docs/screenshots/dashboard.png)
+
+<p align="center"><em>The production dashboard turns finalized documents into owner-scoped, currency-safe business signals.</em></p>
 
 ## The name: Daftar (دَفْتَر)
 
@@ -172,6 +180,21 @@ it is not a missing pagination feature.
 - [x] Branded A4 document view with browser Print / Save PDF
 - [x] One-click creation of the exact `421.50` assignment sample
 
+![Daftar reports showing finalized totals and tax breakdown by currency](docs/screenshots/reports.png)
+
+<p align="center"><em>Reporting keeps currencies separate and derives every figure from finalized, server-calculated records.</em></p>
+
+<table>
+  <tr>
+    <td align="center" width="34%"><img src="docs/screenshots/mobile-dashboard.png" width="260" alt="Daftar responsive mobile dashboard" /></td>
+    <td align="center" width="66%"><img src="docs/screenshots/printable-document.png" width="430" alt="Daftar finalized document prepared for A4 printing" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>A complete owner dashboard at mobile width.</em></td>
+    <td align="center"><em>A clean finalized record ready for Print / Save PDF.</em></td>
+  </tr>
+</table>
+
 ### Delivery and verification
 
 - [x] One Docker Compose application stack for Next.js and Go, backed by external MongoDB Atlas
@@ -274,8 +297,9 @@ repository root. The Makefile loads the same root `.env` used by Compose:
 make dev
 ```
 
-This starts the Go API and Next.js frontend together. Use `make run` or
-`make frontend` when only one process is needed.
+This starts the Go API, waits for its health endpoint, and then starts the
+Next.js frontend. Use `make run` or `make frontend` when only one process is
+needed.
 
 For separate terminals:
 
@@ -476,6 +500,10 @@ Grand total:    421.50
 
 Tax is applied after discount: Widget A is taxed at 5% of `180.00`, not
 `200.00`. The complete policy is in `docs/CALCULATIONS.md`.
+
+![Daftar finalized CrossVal calculation sample with a grand total of 421.50](docs/screenshots/calculation-sample.png)
+
+<p align="center"><em>The seeded CrossVal example proves mixed discount modes, multiple tax treatments and the exact 421.50 grand total.</em></p>
 
 ## Finalization and immutability
 

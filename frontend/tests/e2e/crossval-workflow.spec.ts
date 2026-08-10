@@ -37,7 +37,42 @@ test("authenticated CrossVal workflow remains owner-scoped", async ({ browser, p
 
   await page.emulateMedia({ media: "print" });
   await expect(page.locator(".print-document-header")).toBeVisible();
+  await expect(page.locator(".view-metadata")).toBeVisible();
+  await expect(page.locator(".view-lines")).toBeVisible();
+  await expect(page.locator(".view-line")).toHaveCount(4);
+  await expect(page.locator(".view-summary")).toBeVisible();
+  await expect(page.locator(".tax-summary")).toBeVisible();
   await expect(page.locator(".print-document-footer")).toBeVisible();
+  await expect(page.locator(".print-document-shell").getByText(/DOC-/).first()).toBeVisible();
+  await expect(page.locator(".skip-link")).toBeHidden();
+  await expect(page.locator(".app-sidebar")).toBeHidden();
+  await expect(page.locator(".mobile-bar")).toBeHidden();
+  await expect(page.locator(".mobile-nav")).toBeHidden();
+  await expect(page.locator(".detail-page-heading")).toBeHidden();
+  await expect(page.locator("[data-sonner-toaster]")).toBeHidden();
+  await expect(activity).toBeHidden();
+  const printStyles = await page.evaluate(() => {
+    const total = document.querySelector<HTMLElement>(".grand-total");
+    const label = document.querySelector<HTMLElement>(".grand-total dt");
+    const amount = document.querySelector<HTMLElement>(".grand-total .money-amount");
+    const row = document.querySelector<HTMLElement>(".view-line:not(.view-line--head)");
+    const summary = document.querySelector<HTMLElement>(".view-summary");
+    if (!total || !label || !amount || !row || !summary) throw new Error("print document is incomplete");
+    return {
+      totalBackground: getComputedStyle(total).backgroundColor,
+      labelColor: getComputedStyle(label).color,
+      amountColor: getComputedStyle(amount).color,
+      rowBreakInside: getComputedStyle(row).breakInside,
+      summaryBreakInside: getComputedStyle(summary).breakInside,
+    };
+  });
+  expect(printStyles).toEqual({
+    totalBackground: "rgb(23, 63, 52)",
+    labelColor: "rgb(255, 255, 255)",
+    amountColor: "rgb(255, 255, 255)",
+    rowBreakInside: "avoid",
+    summaryBreakInside: "avoid",
+  });
   await page.emulateMedia({ media: "screen" });
 
   for (let index = 0; index < 10; index += 1) {

@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="sidebar-account"><span className="sidebar-avatar" aria-hidden="true">{initials}</span><div><strong>{user?.first_name} {user?.last_name}</strong><span>{user?.email}</span></div><button type="button" onClick={() => void logout()} aria-label="Sign out"><SignOut size={19} /></button></div>
     </aside>
     <div className="app-content">
-      <header className="mobile-bar"><Link href="/dashboard"><Image src="/daftar-primary.svg" width={224} height={78} alt="Daftar" /></Link><span className="user-avatar">{initials}</span></header>
+      <header className="mobile-bar"><Link href="/dashboard"><Image src="/daftar-primary.svg" width={224} height={78} alt="Daftar" /></Link><div className="mobile-account"><span className="user-avatar" aria-hidden="true">{initials}</span><button type="button" onClick={() => void logout()} aria-label="Sign out"><SignOut size={19} /></button></div></header>
       {children}
       <nav className="mobile-nav" aria-label="Mobile navigation">{navigation.map(({ href, label, icon: Icon }) => { const active = pathname.startsWith(href); return <Link className={active ? "mobile-nav__active" : ""} href={href} aria-current={active ? "page" : undefined} key={href}><Icon aria-hidden="true" size={20} weight={active ? "fill" : "regular"} /><span>{label}</span></Link>; })}</nav>
     </div>
