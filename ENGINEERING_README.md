@@ -178,7 +178,7 @@ are never accepted by protected API middleware.
 
 ## Live application
 
-The public deployment URL will be added here before submission.
+[https://daftar.benjys.me](https://daftar.benjys.me)
 
 ## Product capabilities
 
@@ -357,7 +357,7 @@ consistently with `make ENV_FILE=.env.production <target>`.
 | `DAFTAR_LOG_FORMAT` | `pretty` | Readable local output; production defaults to structured `json` when unset |
 | `DAFTAR_LOG_SLOW_REQUEST_THRESHOLD` | `750ms` | Requests at or above this duration are logged at warning level |
 | `DAFTAR_HTTP_ADDRESS` | `:8080` | API listen address |
-| `DAFTAR_CORS_ALLOWED_ORIGINS` | `http://localhost:3000` | Exact browser origins allowed to send credentialed requests |
+| `DAFTAR_CORS_ALLOWED_ORIGINS` | `http://localhost:3000,http://127.0.0.1:3000` | Exact browser origins allowed to send credentialed requests |
 | `DAFTAR_API_INTERNAL_URL` | `http://api:8080` | Server-side Next.js proxy destination inside Compose |
 | `DAFTAR_API_INTERNAL_URL_NATIVE` | `http://localhost:8080` | Server-side Next.js proxy destination for `make frontend` |
 | `DAFTAR_MONGODB_URI` | Atlas `mongodb+srv://...` URI | External database used by the container runtime |

@@ -177,7 +177,8 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
       error?.requestId ?? "",
     );
     const isAuthAttempt = path === "/api/v1/auth/login" || path === "/api/v1/auth/register";
-    if (response.status === 401 && !isAuthAttempt && typeof window !== "undefined") {
+    const isInitialSessionCheck = path === "/api/v1/me";
+    if (response.status === 401 && !isAuthAttempt && !isInitialSessionCheck && typeof window !== "undefined") {
       window.dispatchEvent(new Event("daftar:session-expired"));
     }
     throw apiError;

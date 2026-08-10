@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <a href="#deployed-url">Live demo</a> ·
+  <a href="https://daftar.benjys.me">Live demo</a> ·
   <a href="#five-minute-reviewer-tour">Reviewer tour</a> ·
   <a href="#complete-implemented-feature-inventory">Features</a> ·
   <a href="#step-by-step-setup">Setup</a> ·
@@ -26,9 +26,11 @@ it protects ownership, preserves calculation integrity, prevents lost updates,
 locks finalized records, records an immutable audit history and turns the
 result into a polished document workflow.
 
-The system combines a Go REST API, MongoDB and a responsive Next.js interface
-in one Docker Compose stack. Financial arithmetic is deterministic and
-server-owned; the browser never supplies calculated totals.
+The system combines a Go REST API, external MongoDB Atlas persistence and a
+responsive Next.js interface. The application containers share one Docker
+Compose stack while Atlas remains independent of the deployment host.
+Financial arithmetic is deterministic and server-owned; the browser never
+supplies calculated totals.
 
 ## The name: Daftar (دَفْتَر)
 
@@ -172,8 +174,8 @@ it is not a missing pagination feature.
 
 ### Delivery and verification
 
-- [x] One Docker Compose stack for Next.js, Go and MongoDB
-- [x] MongoDB replica-set configuration for transactional writes
+- [x] One Docker Compose application stack for Next.js and Go, backed by external MongoDB Atlas
+- [x] Atlas replica-set transactions without a database container on the deployment host
 - [x] Startup-managed strict MongoDB schema validators for every persisted collection
 - [x] Multi-stage, non-root frontend and API images
 - [x] Correlated structured operational logs with request, user and error-code context
@@ -184,7 +186,7 @@ it is not a missing pagination feature.
 
 ## Deployed URL
 
-> **Deployment URL:** _To be added before submission_
+> **Live application:** [https://daftar.benjys.me](https://daftar.benjys.me)
 
 Include the same URL in the submission email.
 
@@ -533,8 +535,8 @@ Beyond the core calculator workflow, this implementation includes:
 - Multi-currency reports that never combine unrelated currencies.
 - Responsive and accessible UI states, keyboard support, Phosphor icons,
   Sonner notifications and branded loading experiences.
-- Multi-stage non-root containers and a single Compose stack using a MongoDB
-  replica set for transactional writes.
+- Multi-stage non-root application containers backed by an external Atlas
+  replica set for transactional writes and host-independent persistence.
 - Idempotent MongoDB `$jsonSchema` validators that reject malformed direct
   writes across users, documents, counters, audits and refresh sessions.
 - Unit, race, repository integration, production-router integration and real
