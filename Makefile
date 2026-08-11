@@ -54,10 +54,11 @@ run: check-env
 	cd $(BACKEND_DIR) && $(GO) run $(API_PACKAGE)
 
 seed: check-env
-	$(COMPOSE) run --build --rm api -seed
+	$(COMPOSE) run --build --rm -e DAFTAR_BOOTSTRAP_USER_ENABLED=true api -seed
 
 seed-native: check-env
 	$(LOAD_ENV) \
+	export DAFTAR_BOOTSTRAP_USER_ENABLED=true; \
 	export DAFTAR_MONGODB_URI="$${DAFTAR_MONGODB_URI_NATIVE:-$${DAFTAR_MONGODB_URI}}"; \
 	cd $(BACKEND_DIR) && $(GO) run $(API_PACKAGE) -seed
 

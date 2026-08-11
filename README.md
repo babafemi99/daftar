@@ -30,9 +30,9 @@ it protects ownership, preserves calculation integrity, prevents lost updates,
 locks finalized records, records an immutable audit history and turns the
 result into a polished document workflow.
 
-The system combines a Go REST API, external MongoDB Atlas persistence and a
-responsive Next.js interface. The application containers share one Docker
-Compose stack while Atlas remains independent of the deployment host.
+The system combines a Go REST API, MongoDB persistence and a responsive Next.js
+interface. A self-contained Docker Compose stack provides a local MongoDB
+replica set; production can point the same API image at MongoDB Atlas.
 Financial arithmetic is deterministic and server-owned; the browser never
 supplies calculated totals.
 
@@ -197,8 +197,8 @@ it is not a missing pagination feature.
 
 ### Delivery and verification
 
-- [x] One Docker Compose application stack for Next.js and Go, backed by external MongoDB Atlas
-- [x] Atlas replica-set transactions without a database container on the deployment host
+- [x] Reproducible Docker Compose stack for Next.js, Go and a local MongoDB replica set
+- [x] Environment-based production override for Atlas replica-set transactions
 - [x] Startup-managed strict MongoDB schema validators for every persisted collection
 - [x] Multi-stage, non-root frontend and API images
 - [x] Correlated structured operational logs with request, user and error-code context
@@ -222,8 +222,8 @@ The recommended setup only requires:
 - Git
 
 For development outside Docker, install Go matching `backend/go.mod`, Node.js
-24 or newer and npm. Every runtime uses the external MongoDB Atlas database
-configured in `.env`.
+24 or newer and npm. Native development can use the Compose-managed MongoDB
+service or an explicitly configured MongoDB Atlas cluster.
 
 ## Step-by-step setup
 
@@ -247,7 +247,7 @@ configured in `.env`.
 3. Build and start the complete stack:
 
    ```sh
-   docker compose up --build -d
+   docker compose up --build
    ```
 
 4. Confirm that all services are running:
@@ -276,7 +276,7 @@ configured in `.env`.
 | Next.js application | <http://localhost:3000> |
 | Go REST API | <http://localhost:8080> |
 | Liveness endpoint | <http://localhost:8080/api/v1/health/live> |
-| Database | External MongoDB Atlas cluster configured in `.env` |
+| MongoDB (local replica set) | `mongodb://localhost:27017` |
 
 ### Optional reviewer account
 
@@ -288,10 +288,17 @@ users or documents and repairs a partially completed finalize/archive step.
 The published credentials are local demonstration values only; replace them
 before seeding any public environment.
 
-### Run without Docker
+### Local development outside Docker
 
-Copy `.env.example`, configure the Atlas URI, then run the backend from the
-repository root. The Makefile loads the same root `.env` used by Compose:
+Install Go, Node.js 24+ and npm, then start only the local MongoDB replica set:
+
+```sh
+cp .env.example .env
+docker compose up -d mongo mongo-init
+```
+
+Run the application processes from the repository root. The Makefile loads the
+same root `.env` used by Compose and uses `DAFTAR_MONGODB_URI_NATIVE`:
 
 ```sh
 make dev
@@ -312,6 +319,22 @@ make frontend
 
 The frontend proxies `/api/v1/*` to `DAFTAR_API_INTERNAL_URL_NATIVE`, which
 defaults to `http://localhost:8080` during native local development.
+
+### Production with MongoDB Atlas
+
+The local database profile is a development default, not a production
+dependency. In the production `.env`:
+
+1. Set `COMPOSE_PROFILES=` to disable the `local-db` profile.
+2. Set `DAFTAR_MONGODB_URI` to the secret Atlas connection string supplied by
+   the deployment environment.
+3. Set `DAFTAR_ENVIRONMENT=production`, `DAFTAR_LOG_FORMAT=json`, secure cookie
+   settings, the deployed CORS origin and a unique high-entropy JWT secret.
+4. Keep `.env` outside version control and allow the deployment host to run
+   `docker compose --env-file .env up -d --build --remove-orphans`.
+
+Atlas credentials are never required for the default local Docker workflow and
+must never be committed to the repository.
 
 ### API capability map
 
@@ -365,8 +388,9 @@ docker compose logs -f
 docker compose down
 ```
 
-MongoDB Atlas owns database persistence independently of the Compose lifecycle;
-stopping or rebuilding the containers does not remove application data.
+The local `mongo_data` named volume survives ordinary container rebuilds and
+`docker compose down`. Production data remains independently owned by Atlas
+when the local database profile is disabled.
 
 ### Run the verification suites
 

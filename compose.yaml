@@ -1,6 +1,44 @@
 name: daftar
 
 services:
+  mongo:
+    image: mongo:8.0
+    profiles: ["local-db"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "${DAFTAR_MONGODB_PORT:-27017}:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--host", "localhost:27017", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+    restart: unless-stopped
+
+  mongo-init:
+    image: mongo:8.0
+    profiles: ["local-db"]
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        mongosh --host mongo:27017 --quiet --eval '
+          try {
+            if (rs.status().ok !== 1) quit(1);
+          } catch (error) {
+            if (error.codeName !== "NotYetInitialized") throw error;
+            rs.initiate({_id: "rs0", members: [{_id: 0, host: "mongo:27017"}]});
+          }
+        '
+        until mongosh --host mongo:27017 --quiet --eval 'quit(rs.status().myState === 1 ? 0 : 1)'; do
+          sleep 1
+        done
+    restart: "no"
+
   frontend:
     build:
       context: ./frontend
@@ -24,6 +62,10 @@ services:
       - ${DAFTAR_ENV_FILE:-.env}
     ports:
       - "${DAFTAR_API_PORT:-8080}:8080"
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+        required: false
     healthcheck:
       test: ["CMD", "/daftar-api", "healthcheck"]
       interval: 10s
@@ -31,3 +73,6 @@ services:
       retries: 5
       start_period: 5s
     restart: unless-stopped
+
+volumes:
+  mongo_data:

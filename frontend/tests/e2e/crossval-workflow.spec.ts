@@ -110,6 +110,13 @@ test("authenticated CrossVal workflow remains owner-scoped", async ({ browser, p
   await expect(page.locator(".currency-report-card .money-amount").filter({ hasText: "USD 421.50" })).toBeVisible();
   await expect(page.locator(".currency-report-card .document-count")).toContainText("1 document");
 
+  const reportScreenshotPath = process.env.DAFTAR_REPORT_SCREENSHOT_PATH;
+  if (reportScreenshotPath) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(page.locator("[data-sonner-toaster] [data-sonner-toast]")).toHaveCount(0);
+    await page.screenshot({ path: reportScreenshotPath, fullPage: false });
+  }
+
   const otherContext = await browser.newContext();
   const other = await otherContext.newPage();
   await other.goto("/register");
